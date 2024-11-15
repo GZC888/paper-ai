@@ -1,24 +1,26 @@
-[English Documentation](./README_en.md)
-
 <a href="https://paperai.life">
-<div style="text-align: center;">
-    <img src="./app/favicon.ico" alt="the fastest way to create a paper with real references" style="display: block; margin-left: auto; margin-right: auto;">
-</div>  <h1 align="center">paper-ai</h1>
+<div align="center">
+    <img src="./public/android-chrome-192x192.png" alt="the fastest way to create a paper with real references">
+</div>
+<h1 align="center">paper-ai</h1>
 </a>
+
+<p align="center"> <a href="./README_en.md"><b>English Documentation </b></a> </p>
 
 <p align="center">
  使用真实文献最快速完成论文的方法
 </p>
 
-<p style="text-align: center;">
-<a href='https://docs.paperai.life/' style='font-size: 20px;'><strong>文档网站(教程比较详细,推荐在这里观看)</strong></a>
+<p align="center">
+<a href='https://docs.paperai.life/' style='font-size: 20px;'><strong>文档网站(教程比较详细,推荐阅读这里)</strong></a> ·
+<a href='https://www.bilibili.com/video/BV1Ya4y1k75V'><strong>bilibili视频教程</strong></a>
 </p>
 
 <p align="center">
   <a href="#功能"><strong>功能</strong></a> ·
   <a href="#演示"><strong>演示</strong></a> ·
   <a href="#部署到Vercel"><strong>部署到 Vercel</strong></a> ·
-  <a href="#克隆并在本地运行"><strong>克隆并在本地运行</strong></a> ·
+  <a href="#克隆并在本地运行"><strong>克隆并在本地运行</strong></a>
 </p>
 <br/>
 
@@ -44,7 +46,7 @@
 
 上述操作还会将 repo 克隆到 GitHub。
 
-如果只想在本地开发，而不想部署到 Vercel，[请按以下步骤操作](#clone-and-run-locally)。
+如果只想在本地开发，而不想部署到 Vercel，[请按以下步骤操作](#克隆并在本地运行)。
 
 ## 镜像运行
 
@@ -91,7 +93,8 @@ npm run dev
 
 1. semantic scholar api: https://api.semanticscholar.org/api-docs/#tag/Paper-Data/operation/get_graph_paper_relevance_search
 2. pubmed api: https://www.ncbi.nlm.nih.gov/books/NBK25500/
+3. i18n: https://locize.com/blog/next-app-dir-i18n/
 
 ## 许可证
 
-MIT
+该项目已获得[MIT License](LICENSE)的许可

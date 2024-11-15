@@ -1,8 +1,5 @@
-import { Transforms } from "slate";
-import { Editor } from "slate";
 import Quill from "quill";
 
-import { extractText } from "@/utils/others/slateutils";
 import {
   updateBracketNumbersInDeltaKeepSelection,
   convertToSuperscript,
@@ -29,7 +26,8 @@ const sendMessageToOpenAI = async (
   upsreamUrl: string,
   prompt: string,
   cursorPosition: number | null,
-  useEditorFlag = true // 新增的标志，用于决定操作
+  useEditorFlag = true, // 新增的标志，用于决定操作
+  signal: AbortSignal
 ) => {
   //识别应该使用的模型
   let model = selectedModel;
@@ -37,6 +35,7 @@ const sendMessageToOpenAI = async (
   // 设置API请求参数
   const requestOptions = {
     method: "POST",
+    signal: signal,
     headers: {
       "Content-Type": "application/json",
       // "Upstream-Url": upsreamUrl,
@@ -75,17 +74,24 @@ const sendMessageToOpenAI = async (
   // 发送API请求
 
   let response;
-
+  let responseClone = null; // 用于保存响应内容的变量
   try {
     response = await fetch(
       (upsreamUrl || process.env.NEXT_PUBLIC_AI_URL) + "/v1/chat/completions",
       requestOptions
     );
-    if (!response.ok || !response.body) {
-      throw new Error("");
+    // 检查响应状态码是否为429
+    if (response.status === 429) {
+      // 可以在这里处理429错误，例如通过UI通知用户
+      throw new Error("请求过于频繁，请稍后再试。");
+    } else if (!response.ok) {
+      // 处理其他类型的HTTP错误
+      throw new Error(`HTTP错误，状态码：${response.status}`);
     }
+    // 克隆响应以备后用
+    responseClone = response.clone();
     if (useEditorFlag && editor && cursorPosition !== null) {
-      const reader = response.body.getReader();
+      const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       //开始前先进行换行
       // editor.focus();
@@ -101,58 +107,24 @@ const sendMessageToOpenAI = async (
       const content = data.choices[0].message.content;
       return content; // 或根据需要处理并返回数据
     }
-  } catch (error) {
-    console.error("Error:", error);
-    // 如果有响应，返回响应的原始内容
-    if (response) {
-      const rawResponse = await response.text();
-      throw new Error(`请求发生错误: ${error}, Response: ${rawResponse}`);
+  } catch (error: any) {
+    if (error.name === "AbortError") {
+      console.log("Fetch operation was aborted");
+      //这里不用产生报错因为是手动停止
+      return;
     }
-    // 如果没有响应，只抛出错误
-    throw error;
-  }
-};
+    console.error("Error:", error);
 
-const getAI = async (
-  userMessage: string,
-  systemPrompt: string,
-  apiKey: string,
-  upsreamUrl: string,
-  selectedModel: string
-) => {
-  // 设置API请求参数
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization:
-        "Bearer " +
-        (isValidApiKey(apiKey)
-          ? apiKey
-          : process.env.NEXT_PUBLIC_OPENAI_API_KEY),
-    },
-    body: JSON.stringify({
-      model: selectedModel || "gpt-3.5-turbo",
-      stream: false,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
-    }),
-  };
-  const response = await fetch(
-    (upsreamUrl || process.env.NEXT_PUBLIC_AI_URL) + "/v1/chat/completions",
-    requestOptions
-  );
-  const data = await response.json();
-  const topic = data.choices[0].message.content;
-  return topic; // 获取并返回回复
+    // 根据是否成功读取响应体来抛出错误
+    if (responseClone) {
+      const textResponse = await responseClone.text(); // 从克隆的响应中读取数据
+      throw new Error(
+        `请求发生错误: ${error.message}, Response: ${textResponse}`
+      );
+    } else {
+      throw new Error(`请求发生错误: ${error.message}`);
+    }
+  }
 };
 
 async function processResult(reader, decoder, editor) {
@@ -186,8 +158,8 @@ async function processResult(reader, decoder, editor) {
           // 处理 dataObject 中的 content
           if (dataObject.choices && dataObject.choices.length > 0) {
             let content =
-              dataObject.choices[0].message?.content ||
-              dataObject.choices[0].delta?.content;
+              dataObject.choices[0].delta?.content ??
+              dataObject.choices[0].message?.content;
             if (content) {
               // 在当前光标位置插入文本
               // editor.focus();
@@ -207,4 +179,4 @@ async function processResult(reader, decoder, editor) {
   }
 }
 
-export { getAI, sendMessageToOpenAI };
+export { sendMessageToOpenAI };

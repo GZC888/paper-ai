@@ -178,20 +178,36 @@ export async function fetchUserVipStatus(userId: string) {
 
 //profiles表 插入用户信息
 export async function insertUserProfile(data: any, supabase: SupabaseClient) {
-  const user = data?.user;
+  let user;
+  if (data.user) {
+    user = data.user;
+  } else {
+    user = data;
+  }
+
   if (user) {
+    // console.log("user in insertUserProfile:", user);
+    const currentTime = new Date().toISOString(); // 生成ISO格式的时间字符串
+
     const { data, error: profileError } = await supabase
       .from("profiles")
-      .insert([{ id: user.id, email: user.email }]);
+      .upsert([
+        {
+          id: user.id,
+          email: user.email,
+          created_at: currentTime, // 添加创建时间
+        },
+      ]);
 
     if (profileError) {
       console.error("Failed to create user profile:", profileError);
+      Sentry.captureException(profileError);
     }
-    //sentry
+
     Sentry.setUser({
       email: user.email,
       id: user.id,
-      ip_address: "{{auto}}}",
+      ip_address: "{{auto}}",
     });
   }
 }

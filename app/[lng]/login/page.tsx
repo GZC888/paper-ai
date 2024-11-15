@@ -10,8 +10,9 @@ import { useTranslation } from "@/app/i18n";
 import { FooterBase } from "@/components/Footer/FooterBase";
 //supabase
 import { insertUserProfile } from "@/utils/supabase/supabaseutils";
-// signingithub
-import { SignInGitHub } from "@/components/SignInGitHub";
+// SignInWithProvider
+import { SignInWithProvider } from "@/components/SignInWithProvider";
+import LinuxdoSignin from "@/components/LinuxdoSignin";
 export default async function Login({
   searchParams,
   params: { lng },
@@ -127,13 +128,17 @@ export default async function Login({
           required
         />
         <button className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2">
-          Sign In
+          Sign In（登录）
         </button>
         <button
           formAction={signUp}
           className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
         >
-          Sign Up
+          Sign Up（注册）
+        </button>
+        {/* 重置密码 */}
+        <button className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2">
+          <Link href="/request-reset">Reset Password（重置密码）</Link>
         </button>
         {searchParams?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
@@ -141,7 +146,17 @@ export default async function Login({
           </p>
         )}
       </form>
-      <SignInGitHub />
+      <div>
+        <LinuxdoSignin />
+        <SignInWithProvider
+          provider="github"
+          redirectTo="https://www.paperai.life/welcome"
+        />
+        <SignInWithProvider
+          provider="google"
+          redirectTo="https://www.paperai.life/welcome"
+        />
+      </div>
       <footer className="w-full border-t border-t-foreground/10 p-8 flex justify-center text-center text-xs">
         <div className="flex items-center space-x-4">
           {" "}

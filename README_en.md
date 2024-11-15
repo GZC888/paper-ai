@@ -1,6 +1,8 @@
 <a href="https://paperai.life">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://paperai.life/opengraph-image.png">
-  <h1 align="center">paper-ai</h1>
+<div align="center">
+    <img src="./public/android-chrome-192x192.png" alt="the fastest way to create a paper with real references">
+</div>
+<h1 align="center">paper-ai</h1>
 </a>
 
 <p align="center">
@@ -8,10 +10,15 @@
 </p>
 
 <p align="center">
+<a href='https://docs.paperai.life/' style='font-size: 20px;'><strong> Website Documentation (detailed tutorials, highly recommended)</strong></a> ·
+<a href='https://www.bilibili.com/video/BV1Ya4y1k75V'><strong>bilibili Video Tutorial</strong></a>
+</p>
+
+<p align="center">
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#demo"><strong>Demo</strong></a> ·
   <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
+  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a>
   <!-- <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
   <a href="#more-supabase-examples"><strong>More Examples</strong></a> -->
 </p>
@@ -40,6 +47,31 @@ The above will also clone the repo to your GitHub, you can clone that locally an
 
 If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
 
+## Using Docker
+
+1. Using `docker pull` command
+
+```sh
+docker pull 14790897/paperai:latest
+```
+
+2. Run Docker
+
+```sh
+docker run -d -p 3000:3000 \
+  -e NEXT_PUBLIC_AI_URL=CUSTOM_AI_URL \
+  -e NEXT_PUBLIC_OPENAI_API_KEY=CUSTOM_API_KEY \
+  14790897/paperai:latest
+```
+
+Replace `CUSTOM_AI_URL` and `CUSTOM_API_KEY` to your own AI URL and API key
+
+## Environment variable description
+1. NEXT_PUBLIC_OPENAI_API_KEY sets the key. Simply leave the corresponding position in the settings interface (the gear in the upper right corner) blank, the predetermined variable will be used.
+2. NEXT_PUBLIC_AI_URL sets the upstream url. Simply leave the corresponding position in the settings interface (the gear in the upper right corner)  blank, the predetermined variable will be used.
+3. NEXT_PUBLIC_SEMANTIC_API_KEY sets the `semantic scholar` key to increase the number of requests
+4. NEXT_PUBLIC_PUBMED_API_KEY sets the `pubmed` key to increase the number of requests
+
 ## Clone and run locally
 
 ```bash
@@ -57,5 +89,13 @@ npm run dev
 
  ```
 
+## Reference
+
+1. semantic scholar api: https://api.semanticscholar.org/api-docs/#tag/Paper-Data/operation/get_graph_paper_relevance_search
+2. pubmed api: https://www.ncbi.nlm.nih.gov/books/NBK25500/
+3. i18n: https://locize.com/blog/next-app-dir-i18n/
+
 ## LICENSE
-MIT
+This repository is licensed under the MIT License
+
+See the [LICENSE](LICENSE) file for details.
